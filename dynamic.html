@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Temperature and Humidity Data</title>
+	<!-- Include Chart.js library -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<link rel="stylesheet" type="css" href="dynamic.css">
+</head>
+<body style="background-color:rgb(195, 203, 203); font-size:medium;">
+	<h1>Temperature and Humidity Data</h1>
+	<table border="4px"width:40%;height:30%;>
+		<tr>
+			<th>DHT</th>
+			<th>values</th>
+		</tr>
+		<tr>
+			<td>Current temperature</td>
+			<td><span id="temp"></span></td>
+		</tr>
+		<tr>
+			<td>Current humidity</td>
+			<td><span id="hum"></span></td>
+		</tr>
+	</table>
+	<canvas id="chart"></canvas>
+
+	<script>
+		// Set up Chart.js configuration
+		var ctx = document.getElementById('chart').getContext('2d');
+		var chart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: [],
+				datasets: [{
+					label: 'Temperature',
+					backgroundColor: 'rgba(255, 99, 132, 0.5)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					data: [],
+					fill: false,
+				}, {
+					label: 'Humidity',
+					backgroundColor: 'rgba(54, 162, 235, 0.5)',
+					borderColor: 'rgba(54, 162, 235, 1)',
+					data: [],
+					fill: false,
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Temperature and Humidity'
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				}
+			}
+		});
+
+		// Function to update data and chart
+		function updateData(temp, hum) {
+			// Update temperature and humidity values on page
+			document.getElementById('temp').innerHTML = temp;
+			document.getElementById('hum').innerHTML = hum;
+
+			// Add data points to chart
+			var time = new Date().toLocaleTimeString();
+			chart.data.labels.push(time);
+			chart.data.datasets[0].data.push(temp);
+			chart.data.datasets[1].data.push(hum);
+
+			// Limit chart to last 10 data points
+			if (chart.data.labels.length > 10) {
+				chart.data.labels.shift();
+				chart.data.datasets[0].data.shift();
+				chart.data.datasets[1].data.shift();
+			}
+
+			// Update chart
+			chart.update();
+		}
+
+		// Example function to get temperature and humidity values from server
+		function getData() {
+			// Simulate server response with random values
+			var temp = Math.floor(Math.random() * 100);
+			var hum = Math.floor(Math.random() * 100);
+
+			// Update data and chart
+			updateData(temp, hum);
+
+			// Call this function again in 5 seconds
+			setTimeout(getData, 5000);
+		}
+
+		// Call initial function to get data
+		getData();
+	</script>
+</body>
+</html>
